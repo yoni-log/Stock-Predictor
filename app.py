@@ -21,7 +21,7 @@ ctk.set_default_color_theme("blue")
 root = ctk.CTk()
 root.iconbitmap("shiba.ico")
 root.title("ShibaTrader")
-root.geometry("960x560 ")
+root.geometry("1280x720")
 
 # Frame for main content
 frame = ctk.CTkFrame(root)
