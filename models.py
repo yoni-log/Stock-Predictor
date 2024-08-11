@@ -46,7 +46,6 @@ def lstm(stock_data, extra_values_to_predict):
 
     seq_length = 20
     X_seq, y_seq = create_sequences(X_scaled, y_scaled, seq_length)
-    print("X_seq shape:", X_seq.shape)  # Debugging line
 
     model = LSTM(input_size=X_seq.shape[2], hidden_size=80, num_layers=2, output_size=1, dropout_rate=0.3)
     model = model.to(device)
@@ -64,6 +63,7 @@ def lstm(stock_data, extra_values_to_predict):
         loss.backward()
         optimizer.step()
 
+        # for future implementation within GUI
         if (epoch + 1) % 10 == 0:
             print(f'Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}')
 
@@ -76,7 +76,6 @@ def lstm(stock_data, extra_values_to_predict):
     y_unscaled = scaler_y.inverse_transform(y_seq.cpu().numpy().reshape(-1, 1))
 
     mse = mean_squared_error(y_unscaled, y_seq_pred_unscaled)
-    print(extra_values_to_predict)
     stock_data.loc[stock_data.index[-1], "Close"] = y_seq_pred_unscaled[-1]
     if extra_values_to_predict > 0:
         next_open = y_seq_pred_unscaled[-1]
@@ -90,7 +89,6 @@ def lstm(stock_data, extra_values_to_predict):
         model.eval()
         next_day_pred_scaled = model(last_seq)
         next_day_pred = scaler_y.inverse_transform(next_day_pred_scaled.cpu().numpy().reshape(-1, 1))
-    print(next_day_pred)
 
     return y_seq_pred_unscaled, mse, loss.item(), stock_data
 
@@ -118,7 +116,6 @@ def random_forest(stock_data, extra_values_to_predict):
     y_pred_test = model.predict(X_test)
 
     mse = mean_squared_error(y_test, y_pred_test)
-    print(extra_values_to_predict)
     stock_data.loc[stock_data.index[-1], "Close"] = y_pred_full[-1]
     if extra_values_to_predict > 0:
         next_open = y_pred_full[-1]
@@ -142,13 +139,11 @@ def linear_regression(stock_data, extra_values_to_predict):
     y_pred_test = model.predict(X_test)
 
     mse = mean_squared_error(y_test, y_pred_test)
-    print(extra_values_to_predict)
     stock_data.loc[stock_data.index[-1], "Close"] = y_pred_full[-1]
     if extra_values_to_predict > 0:
         next_open = y_pred_full[-1]
         next_data = pd.DataFrame({"Open": [next_open], "Volume": [1], "Close": [next_open]})
         stock_data = pd.concat([stock_data, next_data])
         return linear_regression(stock_data, extra_values_to_predict - 1)
-    print(stock_data)
 
     return y_pred_full, mse, 0, stock_data
