@@ -80,20 +80,15 @@ def submit(summary_text, verdict_label, accuracy_label, mse_label, preselected_s
 
 
 def get_accuracy(predicted, closing):
-    print("pred len: " + str(len(predicted)) + "\n closing pred len: " + str(len(closing)))
-
     maes = []
     for i in range(min(len(closing), len(predicted))):
         mae = np.mean(np.abs(closing[i] - predicted[i]))
         maes.append(mae)
     absolute_error = np.mean(maes)
-    print(f"Mean Absolute Error: {absolute_error}")
 
     if np.mean(predicted) - np.mean(closing) > 0:
-        print(f"Mean accuracy: {abs(np.mean(predicted) - np.mean(closing) - 100)}")
         return abs(np.mean(predicted) - np.mean(closing) - 100)
     elif np.mean(predicted) - np.mean(closing) < 0:
-        print(f"Mean accuracy: {abs(np.mean(predicted) - np.mean(closing) + 100)}")
         return abs(np.mean(predicted) - np.mean(closing) + 100)
     return None
 
