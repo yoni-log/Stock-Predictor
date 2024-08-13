@@ -1,41 +1,11 @@
 import tkinter as tk
-import models as mdl
-import datetime as dt
 import yfinance as yf
 import matplotlib.pyplot as plt
 import numpy as np
 import customtkinter as ctk
-import pandas as pd
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from tkinter import ttk
-from tkinter import messagebox
-
-
-def set_lower_combobox(parent):
-    lower_month = ttk.Combobox(parent, values=list(range(1, 13)), state="readonly", width=5, style='Custom.TCombobox')
-    lower_month.grid(row=0, column=0, padx=5)
-
-    lower_day = ttk.Combobox(parent, values=list(range(1, 32)), state="readonly", width=5, style='Custom.TCombobox')
-    lower_day.grid(row=0, column=1, padx=5)
-
-    lower_year = ttk.Combobox(parent, values=list(range(1950, dt.date.today().year + 1)), state="readonly", width=7, style='Custom.TCombobox')
-    lower_year.grid(row=0, column=2, padx=5)
-
-    return lower_month, lower_day, lower_year
-
-
-def set_upper_combobox(parent):
-    upper_month = ttk.Combobox(parent, values=list(range(1, 13)), state="readonly", width=5, style='Custom.TCombobox')
-    upper_month.grid(row=0, column=0, padx=5)
-
-    upper_day = ttk.Combobox(parent, values=list(range(1, 32)), state="readonly", width=5, style='Custom.TCombobox')
-    upper_day.grid(row=0, column=1, padx=5)
-
-    upper_year = ttk.Combobox(parent, values=list(range(2000, dt.date.today().year + 1)), state="readonly", width=7, style='Custom.TCombobox')
-    upper_year.grid(row=0, column=2, padx=5)
-
-    return upper_month, upper_day, upper_year
+from models import Model
 
 
 def submit(summary_text, verdict_label, accuracy_label, mse_label, preselected_stock, lower_date, upper_date, model_combobox, plot_frame, interval_combobox):
@@ -80,15 +50,20 @@ def submit(summary_text, verdict_label, accuracy_label, mse_label, preselected_s
 
 
 def get_accuracy(predicted, closing):
+    print("pred len: " + str(len(predicted)) + "\n closing pred len: " + str(len(closing)))
+
     maes = []
     for i in range(min(len(closing), len(predicted))):
         mae = np.mean(np.abs(closing[i] - predicted[i]))
         maes.append(mae)
     absolute_error = np.mean(maes)
+    print(f"Mean Absolute Error: {absolute_error}")
 
     if np.mean(predicted) - np.mean(closing) > 0:
+        print(f"Mean accuracy: {abs(np.mean(predicted) - np.mean(closing) - 100)}")
         return abs(np.mean(predicted) - np.mean(closing) - 100)
     elif np.mean(predicted) - np.mean(closing) < 0:
+        print(f"Mean accuracy: {abs(np.mean(predicted) - np.mean(closing) + 100)}")
         return abs(np.mean(predicted) - np.mean(closing) + 100)
     return None
 
@@ -126,15 +101,14 @@ def retrieve_stock(ticker, start_date, end_date, interval):
 
 def predict_stock(model, stock_data, interval):
     stock_data = stock_data[["Open", "Volume", "Close"]]
+    model = Model(model, stock_data, extra_values_to_predict=20)
+    model.predict()
 
-    models_dict = {
-        "LSTM": mdl.lstm,
-        "Random Forest": mdl.random_forest,
-        "Linear Regression": mdl.linear_regression
-    }
-    data, mse, loss, stock_data_with_predictions = models_dict[model](stock_data, 10) # 10: values to predict (integer)
-
-    return data, mse, loss, stock_data_with_predictions
+    stock_data_with_predictions = model.get_stock_data_with_predictions()
+    only_predictions = model.get_only_predictions()
+    mse = model.get_mse()
+    loss = model.get_loss()
+    return only_predictions, mse, loss, stock_data_with_predictions
 
 
 def set_combobox(frame, text, values, row, column, width=10, state='readonly', padx=5, pady=5, sticky='w'):
