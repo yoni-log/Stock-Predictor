@@ -39,7 +39,7 @@ upper_date.grid(row=2, column=1, padx=5, pady=5, sticky='w')
 # Display model label & dropbox
 model_label = ctk.CTkLabel(frame, text="Model")
 model_label.grid(row=3, column=0, sticky='w')
-model_combobox = ctk.CTkComboBox(frame, values=["Linear Regression", "LSTM", "Random Forest"], width=100)
+model_combobox = ctk.CTkComboBox(frame, values=["Linear Regression", "LSTM", "Random Forest", "Gradient Boosting"], width=100)
 model_combobox.grid(row=3, column=1, padx=5, pady=5, sticky='w')
 
 # Display interval label & dropbox
