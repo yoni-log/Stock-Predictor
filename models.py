@@ -2,12 +2,16 @@ import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from pandas.core.common import random_state
+from sklearn.datasets import make_regression
 
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
+from sympy.vector import Gradient
 
 
 # Define LSTM model class for predictions
@@ -52,14 +56,15 @@ class Model(object):
             self.random_forest(self.stock_data, self.extra_values_to_predict)
         elif self.model == "Linear Regression":
             self.linear_regression(self.stock_data, self.extra_values_to_predict)
+        elif self.model == "Gradient Boosting":
+            self.gradient_boosting(self.stock_data, self.extra_values_to_predict)
 
     # Implement LSTM prediction
     def lstm(self, stock_data, extra_values_to_predict):
         # Predicting stocks will be slower if NVIDIA Graphics Processing Unit(s) cannot be found
+        device = torch.device("cpu")
         if torch.cuda.is_available():
             device = torch.device("cuda")
-        else:
-            torch.device("cpu")
 
         # Extract features from data set
         X = stock_data[["Open"]].values
@@ -181,7 +186,7 @@ class Model(object):
     # Method to implement Linear Regression model prediction
     def linear_regression(self, stock_data, extra_values_to_predict):
         # Extract feature and target data from the stock dataset
-        X = stock_data[["Open"]].values
+        X = stock_data[["Open", "Volume"]].values
         y = stock_data["Close"].values
 
         # Split the data into training and testing sets
@@ -214,6 +219,41 @@ class Model(object):
         self.loss = 0
         self.stock_data_with_predictions = stock_data
         self.y_pred_full = y_pred_full
+
+    def gradient_boosting(self, stock_data, extra_values_to_predict):
+        # Select the feature and target
+        X = stock_data["Open"].values.reshape(-1, 1)  # Reshape to (n_samples, 1)
+        y = stock_data["Close"].values.reshape(-1, 1)
+
+        # Split the data into training and testing sets
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42
+        )
+
+        # Initialize the Gradient Boosting Regressor
+        reg = GradientBoostingRegressor(random_state=0)
+
+        # Fit the model to the training data
+        reg.fit(X_train, y_train)
+
+        # Predict on the test set
+        y_pred_full = reg.predict(X_test)
+
+        # Calculate Mean Squared Error
+        mse = mean_squared_error(y_test, y_pred_full)
+
+        stock_data.loc[stock_data.index[-1], "Close"] = y_pred_full[-1]
+
+        """###if extra_values_to_predict > 0:
+            next_open = y_pred_full[-1]
+            next_data = pd.DataFrame({"Open": [next_open], "Volume": [1], "Close": [next_open]})
+            stock_data = pd.concat(next_data)
+            return self.gradient_boosting(stock_data, extra_values_to_predict - 1)
+"""
+        self.mse = mse
+        self.loss = 0
+        self.y_pred_full = y_pred_full
+        self.stock_data_with_predictions = stock_data
 
     # Getter method for Mean Squared Error (MSE)
     def get_mse(self):
