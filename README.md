@@ -2,7 +2,7 @@
 # ShibaTrader: Stock Market Analysis and Prediction
 ShibaTrader is a stock analysis and prediction tool that leverages machine learning models such as Linear Regression, LSTM (Long Short-Term Memory), and Random Forest. Read the disclaimer before using this application.
 
-![image](https://github.com/user-attachments/assets/33d660e5-8cb6-4d37-9209-5e2798d6cfb1)
+![image](https://github.com/user-attachments/assets/c9a3847f-ba4f-4916-8fe2-b69318d4295c)
 
 # Features
 * Stock Selection: Input your own stock ticker or choose from a preselected list of popular stocks such as TSLA, AAPL, AMZN, and more.
