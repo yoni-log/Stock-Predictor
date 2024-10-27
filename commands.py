@@ -3,23 +3,23 @@ import yfinance as yf
 import matplotlib.pyplot as plt
 import numpy as np
 import customtkinter as ctk
+import datetime as dt
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from models import Model
 
 
 # Handle the submission of user inputs and update the UI with predictions
-def submit(summary_text, verdict_label, accuracy_label, mse_label, preselected_stock, lower_date, upper_date,
+def submit(summary_text, verdict_label, accuracy_label, mse_label, preselected_stock, stock_period,
            model_combobox, plot_frame, interval_combobox):
     # Retrieve user inputs from the GUI elements
     ticker = preselected_stock.get()
-    start_date = lower_date.get_date()
-    end_date = upper_date.get_date()
+    period = stock_period.get()
     model = model_combobox.get()
     interval = interval_combobox.get()
 
     # Retrieve stock data based on the selected ticker and date range
-    stock_data = retrieve_stock(ticker, start_date, end_date, interval=interval)
+    stock_data = retrieve_stock(ticker, period, interval)
 
     # Generate stock price predictions using the selected model
     predictions, mse, loss, stock_data_with_predictions = predict_stock(model, stock_data, interval)
@@ -42,6 +42,9 @@ def submit(summary_text, verdict_label, accuracy_label, mse_label, preselected_s
     # Display the Mean Squared Error
     mse_label.configure(text=f"MSE: {str(float(mse))}")
     mse_label.grid()
+
+    end_date = (dt.datetime.today() - dt.timedelta(days=int(period[0]))).date().strftime('%Y-%m-%d')
+    start_date = dt.date.today().strftime('%Y-%m-%d')
 
     # Prepare a summary of the predictions and update the summary text area
     summary = (
@@ -105,8 +108,8 @@ def get_verdict(accuracy, mse, stock_data):
 
 
 # Function to retrieve stock data using yfinance
-def retrieve_stock(ticker, start_date, end_date, interval):
-    stock_data = yf.download(ticker, start=start_date, end=end_date, interval=interval)
+def retrieve_stock(ticker, period, interval):
+    stock_data = yf.download(ticker, period=period, interval=interval)
     stock_data.reset_index(inplace=True)  # Reset index to include date as a column
     return stock_data
 
@@ -158,7 +161,7 @@ def display_plot(frame, stock_data, stock_data_with_predictions):
 
     # Set title and labels
     ax.set_title("Stock Prices and Predictions", color="white")
-    ax.set_xlabel("Date", color="white")
+    ax.set_xlabel("Time Steps", color="white")
     ax.set_ylabel("Price", color="white")
     ax.legend(facecolor="#070f1c", edgecolor="white")  # Set legend properties
 
