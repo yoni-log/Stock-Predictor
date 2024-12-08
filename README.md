@@ -1,45 +1,36 @@
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-# ShibaTrader: Stock Market Analysis and Prediction
-ShibaTrader is a stock analysis and prediction tool that leverages machine learning models such as Linear Regression, LSTM (Long Short-Term Memory), and Random Forest. Read the disclaimer before using this application.
+## Getting Started
 
-![image](https://github.com/user-attachments/assets/c9a3847f-ba4f-4916-8fe2-b69318d4295c)
+First, run the development server:
 
-# Features
-* Stock Selection: Input your own stock ticker or choose from a preselected list of popular stocks such as TSLA, AAPL, AMZN, and more.
-* Date Range: Specify the start and end dates to retrieve historical stock data.
-* Prediction Models: Select from three models: Linear Regression, LSTM, and Random Forest.
-* Data Interval: Choose data intervals ranging from 1 minute to 1 day.
-* Stock Data Visualization: View predicted stock prices and compare them against actual closing prices.
-* Prediction Summary: Displays the overall accuracy, mean squared error (MSE), and a verdict on prediction accuracy.
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-Ensure you have the following installed before running the program:
-* Python 3.8+
-* Required Packages: `customtkinter yfinance matplotlib numpy pandas sklearn torch`
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-# Steps to Use the Application
-* Select a Stock: Choose a stock ticker from the dropdown list.
-* Set Date Range: Use the date pickers to set the start and end dates for historical data retrieval.
-* Choose Prediction Model: Select one of the available prediction models.
-* Select Data Interval: Choose the interval for the stock data (e.g., 1 day, 1 hour). Read the disclaimer in the app if using an interval <1 day.
-* Submit: Click the "Submit" button to run the prediction model and visualize the results.
-* Review the Output: The application will display the prediction summary and plot the results on a graph.
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-# Model Descriptions
-Linear Regression
-* This model predicts the closing prices based on the opening prices using a linear regression approach.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-Random Forest
-* Random Forest is an ensemble model that uses multiple decision trees to make predictions. It provides a robust prediction by averaging the results from multiple trees.
+## Learn More
 
-LSTM (Long Short-Term Memory)
-* LSTM is a type of recurrent neural network (RNN) designed for sequence prediction. It excels at predicting time series data due to its ability to maintain a memory of previous data points.
+To learn more about Next.js, take a look at the following resources:
 
-# Summary displayed
-* Stock Ticker: The stock symbol you selected.
-* Date Range: The range of dates for which the stock data was retrieved.
-* Prediction Model: The model used for the prediction.
-* Interval: The data interval selected.
-* Predicted Price: The predicted stock price for the next period.
-* Mean Accuracy: The accuracy of the model's predictions compared to the real values.
-* Mean Squared Error (MSE): The error between predicted and actual prices.
-* Verdict: A qualitative assessment of the prediction accuracy.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
